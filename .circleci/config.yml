@@ -382,6 +382,6 @@ workflows:
       # - cleanup:
       #     requires: [cloudfront-update]
       - deploy:
-          filters:
-            branches:
-              only: develop
+          # filters:
+          #   branches:
+          #     only: develop
