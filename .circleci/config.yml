@@ -170,8 +170,8 @@ jobs:
       - checkout
       - add_ssh_keys:
 	        fingerprints: ["49:de:32:95:cc:77:71:6a:a2:82:fd:a3:eb:e2:c4:09"] 
-      - attach_workspace:
-          at: ~/
+      # - attach_workspace:
+      #     at: ~/
       # attach workspace
       - run:
           name: Install dependencies
