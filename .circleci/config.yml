@@ -135,7 +135,7 @@ jobs:
       - run:
           command: npm run deploy
       - slack/notify:
-          channel: ABCXYZ
+          channel: project
           event: fail
           template: basic_fail_1
 #   deploy-infrastructure:
