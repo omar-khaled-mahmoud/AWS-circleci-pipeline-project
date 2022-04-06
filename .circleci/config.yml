@@ -273,7 +273,11 @@ jobs:
           name: Install dependencies
           command: |
             apk update
-            apk add --update ansible aws-cli openssh-client tar
+            apk add --update ansible  openssh-client tar
+            apk add python curl
+            curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+            unzip awscli-bundle.zip
+            ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
       - run:
           name: Deploy backend
           command: |
