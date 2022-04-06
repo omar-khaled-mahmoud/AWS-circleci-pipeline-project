@@ -278,7 +278,7 @@ jobs:
           name: Deploy backend
           command: |
             cd backend
-            npm install
+            npm i
             npm run build
             cd ..
             # Zip the directory
@@ -360,7 +360,7 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      - deploy-infrastructure
+      # - deploy-infrastructure
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
       #       branches:
