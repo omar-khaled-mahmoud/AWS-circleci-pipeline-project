@@ -131,7 +131,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-  #     - checkout
+      - checkout
   #     - run:
   #         name: Ensure back-end infrastructure exists
   #         command: |
@@ -224,20 +224,20 @@ jobs:
 
      # Here's where you will add some code to rollback on failure      
  
-  # deploy-frontend:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [frontend-build]
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           yum install -y curl tar sudo
-  #           curl -sL https://rpm.nodesource.com/setup_13.x | sudo bash -
-  #           yum install -y nodejs
-  #           node --version
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y curl tar sudo
+            curl -sL https://rpm.nodesource.com/setup_13.x | sudo bash -
+            yum install -y nodejs
+            node --version
   #     - run:
   #         name: Get backend url
   #         command: |
@@ -355,7 +355,7 @@ workflows:
       #     requires: [deploy-infrastructure]
       # - run-migrations
           # requires: [configure-infrastructure] 
-      # - deploy-frontend:
+      - deploy-frontend
       #     requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
