@@ -239,7 +239,7 @@ jobs:
             yum install -y nodejs
             node --version
       - run:
-          name: Get backend url
+          name: Get backend url 
           command: |
             export API_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" \
             --request GET https://api.memstash.io/values/backendurl)
