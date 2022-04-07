@@ -184,7 +184,6 @@ jobs:
           name: Configure server
           command: |
             cd .circleci/ansible
-            export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt configure-server.yml
             
       # Here's where you will add some code to rollback on failure      
@@ -292,6 +291,7 @@ jobs:
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml 
       # Here's where you will add some code to rollback on failure  
 
@@ -377,8 +377,8 @@ workflows:
       #     requires: [configure-infrastructure] 
       # - deploy-frontend:
       #     requires: [run-migrations]
-      - deploy-backend:
-           requires: [configure-infrastructure]
+      - deploy-backend
+          # requires: [configure-infrastructure]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update: 
