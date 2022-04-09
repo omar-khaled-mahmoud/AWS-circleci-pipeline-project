@@ -311,21 +311,7 @@ jobs:
             sudo apt install -y awscli
             sudo apt install -y python3 ansible
             sudo apt install curl
-      # - run:
-      #     name: Get backend url
-      #     command: |
-      #       # your code here
-      - run:
-          name: Backend smoke test.
-          command: |
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                return 0
-            else
-                return 1
-            fi
+
       - run:
           name: Frontend smoke test.
           command: |
@@ -337,7 +323,26 @@ jobs:
                 return 0
               else
                 return 1
-              fi
+              fi      
+      - run:
+           name: Get backend url
+           command: |
+            export BACKEND_IP=$(aws ec2 describe-instances   --query "Reservations[*].Instances[*].PublicIpAddress"   --output=text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+          name: Backend smoke test.
+          command: |
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
+            fi
+
       # Here's where you will add some code to rollback on failure  
 
 #   cloudfront-update:
