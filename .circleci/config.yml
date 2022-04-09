@@ -144,14 +144,14 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
               
-      - run:
-          name: Ensure front-end infrastructure exist
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --tags project=your-tag \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
+      # - run:
+      #     name: Ensure front-end infrastructure exist
+      #     command: |
+      #       aws cloudformation deploy \
+      #         --template-file .circleci/files/frontend.yml \
+      #         --tags project=your-tag \
+      #         --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+      #         --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
              
       - run:
           name: Add back-end ip to ansible inventory
@@ -161,9 +161,9 @@ jobs:
             --output=text >> .circleci/ansible/inventory.txt
       # - destroy-environment         
       - persist_to_workspace:
-          root: ~/
+          root:  .circleci/ansible    #~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - inventory.txt               #project/.circleci/ansible/inventory.txt
        
 
   configure-infrastructure:
@@ -175,7 +175,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: ['49:de:32:95:cc:77:71:6a:a2:82:fd:a3:eb:e2:c4:09'] 
       - attach_workspace:
-          at: ~/
+          at: /tmp/.circleci/ansible #~/
       - run:
           name: Install dependencies
           command: |
@@ -185,8 +185,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+            ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
             
       # Here's where you will add some code to rollback on failure      
 
@@ -277,20 +276,10 @@ jobs:
           name: Install dependencies
           command: |
             apk update
-            apk add --update ansible  openssh-client tar
-            apk add python curl
-            curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-            unzip awscli-bundle.zip
-            ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-            apk add --update nodejs nodejs-npm
+            apk add --update ansible aws-cli openssh-client tar
       - run:
           name: Deploy backend
           command: |
-            # cd backend
-            # npm install
-            # npm run build
-            # cd ..
-            #  Zip the directory
             pwd
             tar -C /tmp/artifacts/backend -czvf artifact.tar.gz .
             cd .circleci/ansible
@@ -400,12 +389,12 @@ workflows:
           #     only: [main]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure] 
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-           requires: [run-migrations]
+      # - run-migrations:
+      #     requires: [configure-infrastructure] 
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      - deploy-backend
+          #  requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update: 
