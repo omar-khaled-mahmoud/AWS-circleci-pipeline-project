@@ -27,9 +27,8 @@ commands:
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/QZRQVxJJWTtnZ1J1vSTBx3/migration_$\{CIRCLE_WORKFLOW_ID:0:7\} )
+            SUCCESS=$(curl --insecure  https://kvdb.io/QZRQVxJJWTtnZ1J1vSTBx3/migration_<<parameters.workflow_id>> )
             if(( $SUCCESS != 1 )); 
             then
             cd ~/project/backend
@@ -223,7 +222,8 @@ jobs:
           paths:
             - backend
       
-      - revert-migrations
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
     # Here's where you will add some code to rollback on failure      
  
@@ -359,29 +359,29 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure] 
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-           requires: [run-migrations]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [main]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      - run-migrations
+      #     requires: [configure-infrastructure] 
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #      requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update: 
