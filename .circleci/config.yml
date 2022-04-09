@@ -264,7 +264,7 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.9.1-alpine3.12
     steps:
       - checkout
       - add_ssh_keys:
@@ -272,7 +272,7 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - attach_workspace:
-           at: ~/
+          at: /tmp/artifacts
       - run:
           name: Install dependencies
           command: |
@@ -286,18 +286,18 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            cd backend
-            npm install
-            npm run build
-            cd ..
-            # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
-            ls
+            # cd backend
+            # npm install
+            # npm run build
+            # cd ..
+            #  Zip the directory
+            pwd
+            tar -C /tmp/artifacts/backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook -i inventory.txt deploy-backend.yml 
+            ansible-playbook -i /tmp/artifacts/inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
 
   smoke-test:
