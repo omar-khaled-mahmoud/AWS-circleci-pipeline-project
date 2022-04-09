@@ -292,6 +292,7 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+            ls
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
@@ -321,7 +322,7 @@ jobs:
               then
                 echo true
               else
-                curl -s httpd:break the code
+                curl -s http:break the code by any string
               fi      
       - run:
            name: Get backend url
@@ -337,9 +338,9 @@ jobs:
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
-                return 0
+                echo true
             else
-                return 1
+                curl http://break-the-code
             fi
 
       # Here's where you will add some code to rollback on failure  
