@@ -210,7 +210,6 @@ jobs:
              
               curl https://kvdb.io/QZRQVxJJWTtnZ1J1vSTBx3/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
               fi
-              curl --insecure  https://kvdb.io/QZRQVxJJWTtnZ1J1vSTBx3/migration_$\{CIRCLE_WORKFLOW_ID:0:7\}
       - run:
           name: Install dependencies
           command: |
