@@ -393,7 +393,7 @@ cleanup:
               aws cloudformation delete-stack --stack-name cloudfront-"${OldWorkflowID}"
             fi
             
-
+ 
 workflows:
   default:
     jobs:
@@ -423,7 +423,7 @@ workflows:
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update: 
-          requires: [smoke-test] 
+          requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
   
