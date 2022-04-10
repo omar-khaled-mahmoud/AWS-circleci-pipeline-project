@@ -27,9 +27,10 @@ commands:
     steps:
       - run:
           name: Revert migrations
+          when: on_fail
           command: |
             SUCCESS=$(curl --insecure  https://kvdb.io/4yJiA9Pqh8jKAtQV4WoNBB/migration_<<parameters.workflow_id>> )
-            if(( $SUCCESS != 1 )); 
+            if(( $SUCCESS == 1 )); 
             then
             cd ~/project/backend
             npm install
@@ -313,9 +314,9 @@ jobs:
               echo ${URL} 
               if curl -s ${URL} | grep "Welcome"
               then
-                echo true
+                exit 1
               else
-                curl -s http:break the code by any string
+                exit 1
               fi      
       - run:
            name: Get backend url
@@ -325,20 +326,22 @@ jobs:
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
-            cat $(API_URL)
+            echo $(API_URL)
       - run:
           name: Backend smoke test.
           command: |
-            echo "${API_URL}"
-            echo $API_URL
             if curl "${API_URL}/api/status" | grep "ok"
             then
-                echo true
+                exit 1
             else
-                echo false
+                exit 1
             fi
-
-      # Here's where you will add some code to rollback on failure  
+            echo $API_URL
+            echo "${API_URL}"
+      - destroy-environment 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 #   cloudfront-update:
 #     docker:
