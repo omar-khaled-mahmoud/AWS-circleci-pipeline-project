@@ -314,7 +314,7 @@ jobs:
               echo ${URL} 
               if curl -s ${URL} | grep "Welcome"
               then
-                curl http:fake-website-to-raise-error
+                echo true
               else
                 curl http:fake-website-to-raise-error
               fi      
@@ -334,7 +334,7 @@ jobs:
             then
                 echo true
             else
-                curl http:fake-website-to-raise-error
+                echo false
             fi
             echo $API_URL
             echo "${API_URL}"
