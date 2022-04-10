@@ -334,7 +334,7 @@ jobs:
             then
                 echo true
             else
-                curl http://break-the-code
+                curl http://break-the-code-
             fi
 
       # Here's where you will add some code to rollback on failure  
