@@ -314,9 +314,9 @@ jobs:
               echo ${URL} 
               if curl -s ${URL} | grep "Welcome"
               then
-                exit 1
+                echo true
               else
-                exit 1
+                curl http:fake-website-to-raise-error
               fi      
       - run:
            name: Get backend url
@@ -332,16 +332,16 @@ jobs:
           command: |
             if curl "${API_URL}/api/status" | grep "ok"
             then
-                exit 1
+                echo true
             else
-                exit 1
+                curl http:fake-website-to-raise-error
             fi
             echo $API_URL
             echo "${API_URL}"
       - destroy-environment 
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 #   cloudfront-update:
 #     docker:
