@@ -314,7 +314,7 @@ jobs:
               echo ${URL} 
               if curl -s ${URL} | grep "Welcome"
               then
-                echo true
+                curl http:fake-website-to-raise-error
               else
                 curl http:fake-website-to-raise-error
               fi      
