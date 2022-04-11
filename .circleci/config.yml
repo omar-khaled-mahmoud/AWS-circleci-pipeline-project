@@ -160,11 +160,11 @@ jobs:
             aws ec2 describe-instances \
             --query "Reservations[*].Instances[*].PublicIpAddress" \
             --output=text >> .circleci/ansible/inventory.txt
-      # - destroy-environment         
+           
       - persist_to_workspace:
-          root:  .circleci/ansible    #~/
+          root:  .circleci/ansible    
           paths:
-            - inventory.txt               #project/.circleci/ansible/inventory.txt
+            - inventory.txt               
        
 
   configure-infrastructure:
@@ -188,7 +188,8 @@ jobs:
           command: |
             ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
             
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID}         
 
   run-migrations:
     docker:
@@ -223,10 +224,10 @@ jobs:
           paths:
             - backend
       
-      # - revert-migrations:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-    # Here's where you will add some code to rollback on failure      
+  
  
   deploy-frontend:
     docker:
@@ -258,7 +259,6 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-     # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}      
                     
@@ -292,7 +292,10 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i /tmp/.circleci/ansible/inventory.txt deploy-backend.yml
-      # Here's where you will add some code to rollback on failure  
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations: 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
   smoke-test:
     docker:
@@ -361,10 +364,10 @@ jobs:
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
             
-      # - destroy-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations: 
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations: 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
   cleanup:
       docker:
@@ -397,21 +400,21 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      - deploy-infrastructure
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          # filters:
-          #   branches:
-          #     only: [main]
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [main]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
