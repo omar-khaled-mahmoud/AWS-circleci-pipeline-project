@@ -40,8 +40,4 @@
     - configure-prometheus-node-exporter
 
 
-global:
-  scrape_interval: 15s
-  external_labels:
-    monitor: 'prometheus'
 
